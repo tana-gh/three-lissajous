@@ -1,0 +1,24 @@
+{
+  "name": "three_lissajous",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "webpack --env.dev --progress",
+    "build:prod": "webpack --env.prod --progress"
+  },
+  "author": "tana",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/three": "^0.89.12",
+    "css-loader": "^0.28.10",
+    "html-webpack-plugin": "^3.0.6",
+    "node-sass": "^4.7.2",
+    "sass-loader": "^6.0.7",
+    "style-loader": "^0.20.3",
+    "three": "^0.91.0",
+    "ts-loader": "^4.0.1",
+    "typescript": "^2.7.2",
+    "webpack": "^4.1.1",
+    "webpack-cli": "^2.0.12"
+  }
+}
