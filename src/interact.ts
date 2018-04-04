@@ -2,11 +2,10 @@ import THREE = require('three')
 import * as Render  from './render'
 import * as Rx from 'rxjs'
 
-const prevCount = 1000
+const possCount = 1000
 
 export interface IInteractions {
-    current: THREE.Vector2
-    prevs  : THREE.Vector2[]
+    poss   : THREE.Vector2[]
     button1: boolean
     button2: boolean
 }
@@ -16,28 +15,35 @@ export const initInteract = (threeObjects: Render.IThreeObjects, width: number, 
                            .appendChild(threeObjects.renderer.domElement)
     
     const interactions = {
-        current: new THREE.Vector2(undefined, undefined),
-        prevs  : <THREE.Vector2[]>[],
+        poss   : [],
         button1: false,
         button2: false
     }
 
-    const mouseEvents: Rx.Observable<MouseEvent> = Rx.Observable.fromEvent(canvas, 'click')
-    
+    const mouseEvents: Rx.Observable<MouseEvent> = Rx.Observable.merge(
+        <Rx.Observable<MouseEvent>>Rx.Observable.fromEvent(canvas, 'mouseup'  ),
+        <Rx.Observable<MouseEvent>>Rx.Observable.fromEvent(canvas, 'mousedown'),
+        <Rx.Observable<MouseEvent>>Rx.Observable.fromEvent(canvas, 'mousemove')
+    )
     return mouseEvents.map(updateInteractions(interactions, width, height))
+                      .merge(Rx.Observable.of(<IInteractions>{
+                          poss   : [],
+                          button1: false,
+                          button2: false
+                      }))
 }
 
 const updateInteractions =
         (interactions: IInteractions, width: number, height: number) => (e: MouseEvent) => {
-    interactions.prevs.push(interactions.current)
     
-    while (interactions.prevs.length > prevCount) {
-        interactions.prevs.shift()
+    while (interactions.poss.length > possCount) {
+        interactions.poss.pop()
     }
     
-    const pos = (offset: number, width: number) => offset / width * 2.0 - 1.0
-
-    interactions.current = new THREE.Vector2(pos(e.offsetX, width), pos(e.offsetY, height))
+    const conv = (offset: number, width: number) => offset / width * 2.0 - 1.0
+    const pos = new THREE.Vector2(conv(e.offsetX, width), conv(e.offsetY, height))
+    
+    interactions.poss.unshift(pos)
     interactions.button1 = (e.buttons & 0x1) !== 0
     interactions.button2 = (e.buttons & 0x2) !== 0
 

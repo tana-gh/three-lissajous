@@ -2,9 +2,9 @@ import THREE = require('three')
 import * as Model    from './model'
 import * as Light    from './light'
 import * as Interact from './interact'
-import * as _        from 'lodash'
+import * as R        from 'ramda'
 
-const modelCount = 50
+const modelCount = 500
 const lightCount = 10
 
 export interface IThreeObjects {
@@ -37,13 +37,13 @@ export const initRender = (width: number, height: number) => {
     const scene = new THREE.Scene()
 
     Model.createModels(modelCount, state)
-    scene.add(..._.map(state.models, x => x.src))
+    scene.add(...R.map(x => x.src, state.models))
 
     Light.createLights(lightCount, state)
-    scene.add(..._.map(state.lights, x => x.src))
+    scene.add(...R.map(x => x.src, state.lights))
 
     const camera = new THREE.PerspectiveCamera(60.0, width / height)
-    camera.position.set(-2.0, 1.0, 3.0)
+    camera.position.set(0.0, 0.0, 3.0)
     camera.lookAt(0.0, 0.0, 0.0)
 
     const renderer = new THREE.WebGLRenderer({
@@ -82,11 +82,11 @@ const animate = (threeObjects: IThreeObjects, state: IState) => (timestamp: numb
 }
 
 const render = (threeObjects: IThreeObjects, state: IState) => {
-    _(state.models).forEach(Model.updateModel(state))
-    _(state.lights).forEach(Light.updateLight(state))
+    R.forEach(Model.updateModel(state), state.models)
+    R.forEach(Light.updateLight(state), state.lights)
 
-    _(state.models).forEach(Model.transformModel(state))
-    _(state.lights).forEach(Light.transformLight(state))
+    R.forEach(Model.transformModel(state), state.models)
+    R.forEach(Light.transformLight(state), state.lights)
 
     threeObjects.renderer.render(threeObjects.scene, threeObjects.camera)
 }
