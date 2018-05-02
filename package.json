@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build": "webpack --env.dev --progress",
-    "build:prod": "webpack --env.prod --progress"
+    "build": "webpack --env.dev",
+    "build:prod": "webpack --env.prod"
   },
   "author": "tana",
   "license": "ISC",
